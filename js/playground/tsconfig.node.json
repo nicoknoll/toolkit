@@ -8,6 +8,6 @@
     "strict": true
   },
   "include": [
-    "./packages/forms/vite.config.ts"
+    "./vite.config.ts"
   ]
 }

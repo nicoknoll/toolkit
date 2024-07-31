@@ -1,0 +1,48 @@
+{
+  "name": "@nicoknoll/toolkit",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nicoknoll/toolkit.git"
+  },
+  "scripts": {
+    "dev": "vite"
+  },
+  "dependencies": {
+    "@nicoknoll/forms": "file:../packages/forms",
+    "@radix-ui/react-popover": "^1.1.1",
+    "@radix-ui/react-slot": "^1.1.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "autoprefixer": "^10.4.19",
+    "chrono-node": "^2.7.6",
+    "clsx": "^2.1.1",
+    "date-fns": "^3.6.0",
+    "downshift": "^9.0.6",
+    "framer-motion": "^12.0.0-alpha.0",
+    "lodash": "^4.17.21",
+    "lucide-react": "^0.396.0",
+    "ol": "^9.2.4",
+    "postcss": "^8.4.38",
+    "prettier": "^3.3.2",
+    "prettier-plugin-tailwindcss": "^0.6.5",
+    "react": "19.0.0-rc-3563387fe3-20240621",
+    "react-day-picker": "^8.10.1",
+    "react-dom": "19.0.0-rc-3563387fe3-20240621",
+    "react-dropzone": "^14.2.3",
+    "react-hook-form": "^7.52.0",
+    "react-use-measure": "^2.1.1",
+    "tailwind-merge": "^2.3.0",
+    "tailwindcss": "^3.4.4",
+    "tailwindcss-radix": "^3.0.3"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.17.6",
+    "@types/node": "^20.14.7",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "typescript": "^5.5.2",
+    "vite": "^5.3.1"
+  }
+}
