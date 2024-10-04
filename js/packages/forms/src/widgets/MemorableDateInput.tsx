@@ -1,6 +1,5 @@
-import { classnames } from '../utils/classnames.ts';
+import { classnames, mergeRefs } from '@nicoknoll/utils';
 import React, { useState } from 'react';
-import mergeRefs from '../utils/mergeRefs.ts';
 import setNativeInputValue from '../utils/setNativeInputValue.ts';
 import IntegerInput from './IntegerInput.tsx';
 import Widget, { useWidgetState } from './Widget.tsx';

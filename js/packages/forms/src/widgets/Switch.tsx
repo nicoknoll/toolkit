@@ -1,4 +1,4 @@
-import { classnames } from '../utils/classnames.ts';
+import { classnames } from '@nicoknoll/utils';
 import * as React from 'react';
 import Widget, { useWidgetState } from './Widget.tsx';
 

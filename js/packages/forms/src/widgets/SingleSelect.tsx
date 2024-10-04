@@ -1,20 +1,24 @@
 import Select, { Option, useSelectNative } from './Select.tsx';
 import * as React from 'react';
-import { useState } from 'react';
-import { CheckIcon, ChevronDownIcon, SearchIcon, XIcon } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { CheckIcon, ChevronsUpDownIcon, SearchIcon, XIcon } from 'lucide-react';
 import Popover from '../misc/Popover.tsx';
-import { classnames } from '../utils/classnames.ts';
+import { classnames } from '@nicoknoll/utils';
 import Widget, { useWidgetState, WidgetProps } from './Widget.tsx';
 import { setNativeSelectValue } from '../utils/setNativeInputValue.ts';
 
-const SingleSelectOption = ({ value, label, disabled = false }: Option) => {
+const SingleSelectOption = ({ value, label, disabled = false, className, index = undefined }: Option) => {
     return (
         <Select.Option
             value={value}
-            className="flex items-center gap-1 ui-highlighted:bg-neutral-100 ui-disabled:opacity-50 text-sm px-2 py-1 rounded text-neutral-700"
+            className={classnames(
+                'flex items-center gap-1 ui-highlighted:bg-neutral-100 ui-disabled:opacity-50 text-sm px-2 py-1 rounded text-neutral-700 select-none',
+                className
+            )}
             disabled={disabled}
+            index={index}
         >
-            <span className="flex justify-center items-center w-4 h-4">
+            <span className="flex justify-center items-center w-4 h-4 flex-none">
                 <Select.OptionIndicator>
                     <CheckIcon />
                 </Select.OptionIndicator>
@@ -24,6 +28,8 @@ const SingleSelectOption = ({ value, label, disabled = false }: Option) => {
         </Select.Option>
     );
 };
+
+const MemoSingleSelectOption = React.memo(SingleSelectOption);
 
 export interface SingleSelectProps extends React.ComponentPropsWithRef<'select'> {
     options: (Option | [string, Option[]])[];
@@ -39,6 +45,7 @@ export interface SingleSelectProps extends React.ComponentPropsWithRef<'select'>
     searchPlaceholder?: string;
     emptyLabel?: string;
 
+    hideSearch?: boolean;
     hideClear?: boolean;
 
     // select props
@@ -65,6 +72,7 @@ export const SingleSelect = ({
     searchPlaceholder,
     emptyLabel,
 
+    hideSearch = false,
     hideClear = false,
 
     // remaining are select props we can pass down
@@ -77,6 +85,15 @@ export const SingleSelect = ({
     ...selectProps
 }: SingleSelectProps & WidgetProps) => {
     const triggerRef = React.useRef<HTMLButtonElement>(null);
+    const searchRef = React.useRef<HTMLInputElement>(null);
+
+    // we need to mount it once to collect the initial options
+    const [isMounted, setIsMounted] = useState(false);
+    useEffect(() => {
+        setTimeout(() => {
+            setIsMounted(true);
+        }, 0);
+    }, []);
 
     const [value, onChange] = useWidgetState('', propsValue, propsOnChange);
 
@@ -85,7 +102,11 @@ export const SingleSelect = ({
 
     const handleOpenChange = (open: boolean | undefined) => {
         setIsPopoverOpen(!!open);
-        if (!open) triggerRef.current?.focus();
+        if (!open) {
+            setTimeout(() => {
+                triggerRef.current?.focus();
+            }, 10);
+        }
     };
 
     const { onSelectedChange, selectNativeProps } = useSelectNative({
@@ -102,16 +123,34 @@ export const SingleSelect = ({
         e.stopPropagation();
     };
 
+    const optionValues = options?.flatMap((option) => {
+        if (Array.isArray(option)) {
+            return option[1].map((option) => option.value);
+        }
+        return option.value;
+    });
+    const handleSelectedChange = (nextValue: any) => {
+        if (optionValues.includes(nextValue)) {
+            onSelectedChange(nextValue);
+        } else if (allowAddOption) {
+            onAddOption?.(nextValue);
+            // Note: ideally the state should be managed on the outside if allowAddOption is used
+            // onSelectedChange(nextValue);
+        }
+    };
+
     return (
         <Popover open={isPopoverOpen}>
             <Select
                 search={search}
                 onSearchChange={setSearch}
                 selected={value}
-                onSelectedChange={onSelectedChange}
+                onSelectedChange={handleSelectedChange}
                 open={isPopoverOpen}
+                forceMount={!isMounted}
                 onOpenChange={handleOpenChange}
                 allowAddOption={allowAddOption}
+                onAddOption={onAddOption}
                 required={selectProps.required}
                 disabled={selectProps.disabled}
                 highlightOnMouseOver
@@ -127,13 +166,13 @@ export const SingleSelect = ({
                             <Widget.Content asChild>
                                 <button
                                     ref={triggerRef}
-                                    className="px-2 py-1.5 pr-0 cursor-default !outline-none"
+                                    className="px-2 py-1.5 pr-0 cursor-default !outline-none text-left"
                                     disabled={selectProps.disabled}
                                     type="button"
                                 >
                                     <Select.Value
                                         placeholder={placeholder === undefined ? emptyLabel : placeholder}
-                                        className="ui-placeholder:text-neutral-400 ui-placeholder:font-normal min-h-5"
+                                        className="ui-placeholder:text-neutral-400 ui-placeholder:font-normal min-h-5 text-left"
                                     />
                                 </button>
                             </Widget.Content>
@@ -145,7 +184,7 @@ export const SingleSelect = ({
                                     </Widget.ControlButton>
                                 ) : (
                                     <Widget.ControlButton className="pointer-events-none">
-                                        <ChevronDownIcon
+                                        <ChevronsUpDownIcon
                                             className={classnames(
                                                 'text-neutral-400 transition-colors',
                                                 !selectProps.disabled && 'group-hover:text-neutral-700'
@@ -160,56 +199,76 @@ export const SingleSelect = ({
                 </Popover.Anchor>
 
                 <Popover.Content
-                    className="p-0 min-w-0"
+                    className={classnames('p-0 min-w-0 overflow-visible flex flex-col', !isMounted && 'hidden')}
                     onOpenAutoFocus={(e) => {
                         e.preventDefault();
                     }}
+                    // @ts-ignore
+                    forceMount={!isMounted}
                     align="start"
-                    forceMount
-                    disableInteractions={!isPopoverOpen}
+                    onWheel={(e) => {
+                        e.stopPropagation();
+                    }}
                 >
-                    <Select.Content className="flex flex-col gap-2 p-2">
-                        <div className="relative w-full min-w-0">
-                            <span className="absolute top-1/2 left-2 transform -translate-y-1/2 text-neutral-400 text-xl">
+                    <Select.Content
+                        className="flex flex-col flex-1 min-h-0"
+                        onKeyDown={(e) => {
+                            if (e.key === 'Escape') {
+                                e.stopPropagation();
+                            }
+                        }}
+                    >
+                        <div className={classnames('relative w-full min-w-0 p-2', hideSearch && 'hidden')}>
+                            <span className="absolute top-1/2 left-4 transform -translate-y-1/2 text-neutral-400 text-xl">
                                 <SearchIcon className="!w-3.5 !h-3.5" />
                             </span>
 
                             <Widget variant="input" asChild disabled={selectProps.disabled}>
                                 <Select.Search
-                                    className="rounded px-2 py-1 pl-7 bg-transparent w-full min-w-0"
+                                    className="rounded px-2 py-1 !pl-7 bg-transparent w-full min-w-0"
                                     placeholder={searchPlaceholder}
+                                    ref={searchRef}
                                 />
                             </Widget>
                         </div>
 
-                        <div className="flex flex-col">
-                            {allowAddOption && search && (
-                                <SingleSelectOption value={search} label={search} disabled={!search} />
+                        <div
+                            className={classnames(
+                                'flex flex-col overflow-auto scrollbar-thin flex-1 min-h-0 p-2',
+                                !hideSearch && 'pt-0'
+                            )}
+                        >
+                            {allowAddOption && (
+                                <MemoSingleSelectOption
+                                    index={0}
+                                    value={search || ''}
+                                    label={search || ''}
+                                    disabled={!search}
+                                    className={!search ? 'hidden' : ''}
+                                />
                             )}
 
-                            {!selectProps.required && (
-                                <SingleSelectOption value="" label={emptyLabel} disabled={false} />
-                            )}
-
-                            {options.map((option: Option | [string, Option[]]) => {
+                            {options.map((option: Option | [string, Option[]], index) => {
                                 if (Array.isArray(option)) {
                                     const [label, options] = option;
                                     return (
                                         <React.Fragment key={label}>
-                                            <Select.Separator className="border-t border-neutral-200 my-2" />
+                                            {index !== 0 && (
+                                                <Select.Separator className="border-t border-neutral-200 my-2" />
+                                            )}
                                             <Select.Group className="flex flex-col">
-                                                <Select.GroupLabel className="font-medium text-sm px-2 py-1 pl-7">
+                                                <Select.GroupLabel className="font-medium text-sm px-2 py-1 !pl-7">
                                                     {label}
                                                 </Select.GroupLabel>
                                                 {options.map((option: Option) => (
-                                                    <SingleSelectOption key={option.value} {...option} />
+                                                    <MemoSingleSelectOption key={option.value} {...option} />
                                                 ))}
                                             </Select.Group>
                                         </React.Fragment>
                                     );
                                 }
 
-                                return <SingleSelectOption key={option.value} {...option} />;
+                                return <MemoSingleSelectOption key={option.value} {...option} />;
                             })}
                         </div>
                     </Select.Content>

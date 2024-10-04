@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Widget, { WidgetProps } from './Widget.tsx';
-import { classnames } from '../utils/classnames.ts';
+import { classnames } from '@nicoknoll/utils';
 import {
     ExternalLinkIcon,
     FileArchiveIcon,
@@ -46,7 +46,7 @@ const FileIcon = ({ ext }: { ext: string }) => {
     }
 };
 
-interface InputFile extends File {
+export interface InputFile extends File {
     name: string;
     url?: string;
 }
@@ -182,7 +182,7 @@ const FileInput = ({
                     <Widget.Content asChild>
                         <div
                             {...getRootProps()}
-                            className={classnames('px-2 py-1.5 flex justify-center items-center min-h-20')}
+                            className={classnames('px-2 py-1.5 flex flex-1 justify-center items-center min-h-20')}
                         >
                             <input {...getInputProps()} />
                             <span

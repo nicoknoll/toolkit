@@ -1,8 +1,9 @@
-import { classnames } from '../utils/classnames.ts';
+import { classnames } from '@nicoknoll/utils';
 import TextInput from '../widgets/TextInput.tsx';
 import * as React from 'react';
-import Dynamic from '../misc/Dynamic.tsx';
-import { useId } from 'react';
+import Dynamic from '../../../utils/src/components/Dynamic.tsx';
+import { useEffect, useId } from 'react';
+import { mergeRefs } from '@nicoknoll/utils';
 
 export interface FieldProps<T> {
     // field component props
@@ -70,16 +71,17 @@ interface SimpleFieldProps<T> extends FieldProps<T> {
     [key: string]: any;
 }
 
-export const SimpleField = <T,>({
-    label,
-    error,
-    helpText,
-    widget,
-    className,
-
-    ...props
-}: SimpleFieldProps<T>) => {
+export const SimpleField = <T,>({ ref, label, error, helpText, widget, className, ...props }: SimpleFieldProps<T>) => {
     const id = useId();
+
+    const inputRef = React.useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        if (inputRef.current) {
+            inputRef.current.setCustomValidity((error as string) || '');
+        }
+    }, [error]);
+
     return (
         <FieldRoot className={className} data-error={error ? error : undefined} data-invalid={error ? '' : undefined}>
             {label && (
@@ -88,10 +90,9 @@ export const SimpleField = <T,>({
                 </FieldLabel>
             )}
 
-            <Dynamic component={widget || TextInput} {...props} id={props.id || id} />
+            <Dynamic component={widget || TextInput} {...props} ref={mergeRefs(inputRef, ref)} id={props.id || id} />
 
-            {helpText && <FieldHelpText>{helpText}</FieldHelpText>}
-            {error && <FieldError>{error}</FieldError>}
+            {error ? <FieldError>{error}</FieldError> : helpText && <FieldHelpText>{helpText}</FieldHelpText>}
         </FieldRoot>
     );
 };

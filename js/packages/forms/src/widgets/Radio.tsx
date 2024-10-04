@@ -1,5 +1,5 @@
 import React from 'react';
-import { classnames } from '../utils/classnames.ts';
+import { classnames } from '@nicoknoll/utils';
 import Widget, { useWidgetState } from './Widget.tsx';
 
 interface RadioProps extends React.ComponentPropsWithRef<'input'> {}

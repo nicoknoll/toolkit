@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { useEffect } from 'react';
 import { CheckIcon, MinusIcon } from 'lucide-react';
-import { classnames } from '../utils/classnames.ts';
+import { classnames } from '@nicoknoll/utils';
 import Widget, { useWidgetState } from './Widget.tsx';
-import mergeRefs from '../utils/mergeRefs.ts';
+import { mergeRefs } from '@nicoknoll/utils';
 
 export interface CheckboxProps extends React.ComponentPropsWithRef<'input'> {
     indeterminate?: boolean;

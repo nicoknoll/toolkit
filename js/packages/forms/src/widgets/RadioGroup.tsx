@@ -2,7 +2,7 @@ import React from 'react';
 import Select, { Option } from './Select.tsx';
 import Radio from './Radio.tsx';
 import { SingleSelectProps } from './SingleSelect.tsx';
-import { classnames } from '../utils/classnames.ts';
+import { classnames } from '@nicoknoll/utils';
 import { useWidgetState } from './Widget.tsx';
 
 const RadioGroupItem = ({
@@ -52,7 +52,7 @@ const RadioGroup = ({
                         <React.Fragment key={label}>
                             <Select.Separator className="border-t border-neutral-200 my-2" />
                             <Select.Group className="flex flex-col">
-                                <Select.GroupLabel className="font-medium text-sm px-2 py-1 pl-7">
+                                <Select.GroupLabel className="font-medium text-sm px-2 py-1 !pl-7">
                                     {label}
                                 </Select.GroupLabel>
                                 {options.map((option: Option) => (

@@ -18,6 +18,9 @@ export default {
             outlineWidth: {
                 3: '3px',
             },
+            animation: {
+                'spin-slow': 'spin 3s linear infinite',
+            },
         },
         colors: {
             theme: colors.blue,

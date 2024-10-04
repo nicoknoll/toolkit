@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { useContext } from 'react';
-import { classnames } from '../utils/classnames.ts';
+import { classnames } from '@nicoknoll/utils';
 import { ButtonProps } from '../misc/Button.tsx';
 import { Slot } from '@radix-ui/react-slot';
 import { Slottable } from './Select.tsx';
-import useControllableState from '../utils/useControllableState.tsx';
+import { useControllableState } from '@nicoknoll/utils';
 import isMultipleSelect from '../utils/isMultipleSelect.ts';
 import { FieldElement } from 'react-hook-form';
 

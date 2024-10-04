@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { DayPicker } from 'react-day-picker';
-import { classnames } from '../utils/classnames.ts';
+import { classnames } from '@nicoknoll/utils';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
+import { de } from 'date-fns/locale';
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
@@ -20,6 +21,7 @@ const Calendar = ({
 
     return (
         <DayPicker
+            locale={de}
             captionLayout="dropdown-buttons"
             showOutsideDays={showOutsideDays}
             weekStartsOn={1}
@@ -45,7 +47,7 @@ const Calendar = ({
                 day: 'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-neutral-100 hover:text-neutral-800 h-9 w-9 p-0 font-normal aria-selected:opacity-100',
                 day_selected:
                     'bg-theme-600 !text-white hover:bg-theme-600 hover:text-white focus:bg-theme-600 focus:text-white rounded-md',
-                day_today: 'text-theme-600 rounded-md',
+                day_today: 'text-theme-600 rounded-md underline decoration-2 underline-offset-4',
                 day_outside: 'text-neutral-500 opacity-50',
                 day_disabled: 'text-neutral-500 opacity-50',
                 day_range_start: 'aria-selected:bg-theme-600 aria-selected:text-white rounded-l-md',

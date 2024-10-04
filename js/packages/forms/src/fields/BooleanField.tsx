@@ -1,7 +1,7 @@
 import Field, { FieldProps } from './Field.tsx';
 import Checkbox from '../widgets/Checkbox.tsx';
-import { classnames } from '../utils/classnames.ts';
-import Dynamic from '../misc/Dynamic.tsx';
+import { classnames } from '@nicoknoll/utils';
+import Dynamic from '../../../utils/src/components/Dynamic.tsx';
 import React, { useId } from 'react';
 
 const BooleanField = ({
@@ -47,8 +47,7 @@ const BooleanField = ({
                         {label}
                     </Field.Label>
                 )}
-                {helpText && <Field.HelpText>{helpText}</Field.HelpText>}
-                {error && <Field.Error>{error}</Field.Error>}
+                {error ? <Field.Error>{error}</Field.Error> : helpText && <Field.HelpText>{helpText}</Field.HelpText>}
             </div>
         </Field>
     );

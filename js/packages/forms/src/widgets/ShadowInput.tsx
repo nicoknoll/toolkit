@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { ChangeEventHandler, FormEventHandler, useEffect, useRef, useState } from 'react';
 import setNativeInputValue from '../utils/setNativeInputValue.ts';
-import mergeRefs from '../utils/mergeRefs.ts';
+import { mergeRefs } from '@nicoknoll/utils';
 
 const createShadowInput = ({
     onInput,

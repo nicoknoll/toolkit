@@ -17,19 +17,28 @@ interface FormProps<TFieldValues extends FieldValues = FieldValues>
     children: React.ReactNode;
     onSubmit: SubmitHandler<TFieldValues>;
     formMethods?: UseFormReturn<TFieldValues>;
+    onIsSubmittingChange?: (isSubmitting: boolean) => void;
 }
 
 const Form = <TFieldValues extends FieldValues = FieldValues>({
     children,
     onSubmit,
     formMethods,
+    onIsSubmittingChange,
     ...props
 }: FormProps<TFieldValues>) => {
     const methods = formMethods || useForm<TFieldValues>();
 
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        onIsSubmittingChange?.(true);
+        const result = await Promise.resolve(methods.handleSubmit(onSubmit)(event));
+        onIsSubmittingChange?.(false);
+        return result;
+    };
+
     return (
         <FormProvider {...methods}>
-            <form onSubmit={methods.handleSubmit(onSubmit)} {...props}>
+            <form onSubmit={handleSubmit} {...props}>
                 {children}
             </form>
         </FormProvider>
