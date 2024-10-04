@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Widget, { useWidgetState, WidgetProps } from './Widget.tsx';
-import { classnames } from '../utils/classnames.ts';
+import { classnames } from '@nicoknoll/utils';
 
 export interface TextAreaProps extends React.ComponentPropsWithRef<'textarea'>, WidgetProps {}
 

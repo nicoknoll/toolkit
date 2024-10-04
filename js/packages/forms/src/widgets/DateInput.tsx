@@ -5,11 +5,8 @@ import Popover from '../misc/Popover.tsx';
 import { ChevronDownIcon, XIcon } from 'lucide-react';
 import Calendar from './Calendar.tsx';
 import * as chrono from 'chrono-node';
-import mergeRefs from '../utils/mergeRefs.ts';
+import { classnames, mergeRefs } from '@nicoknoll/utils';
 import setNativeInputValue from '../utils/setNativeInputValue.ts';
-import Button from '../misc/Button.tsx';
-import { classnames } from '../utils/classnames.ts';
-import TextInput from './TextInput.tsx';
 
 // Function to parse a date string into a Date object
 const parseDate = (str: Date | string): Date | null => {
@@ -73,7 +70,10 @@ const DateInput = ({
         if (disabled) return;
 
         setIsPopoverOpen(open);
-        setInputValue('');
+
+        if (!open) {
+            triggerRef.current?.focus();
+        }
     };
 
     const [value, onChange] = useWidgetState('', props.value, props.onChange);
@@ -85,53 +85,21 @@ const DateInput = ({
         e.stopPropagation();
     };
 
-    /* Input field */
-
-    const [inputValue, setInputValue] = useState<string | undefined>(value);
-    const parsedInputDate = inputValue ? parseDate(inputValue) || undefined : undefined;
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setInputValue(e.target.value);
-    };
-
-    const handleButtonClick = () => {
-        if (nativeRef.current) {
-            setNativeInputValue(nativeRef.current, formatDate(parsedInputDate || ''));
-            setIsPopoverOpen(false);
-        }
-    };
-
-    /* Calendar */
-
     const parsedDate = value ? parseDate(value) || undefined : undefined;
 
     const [month, setMonth] = useState<Date>(parsedDate || new Date());
     useEffect(() => {
         if (parsedDate) setMonth(parsedDate);
     }, [value]);
-    useEffect(() => {
-        if (parsedInputDate) setMonth(parsedInputDate);
-    }, [inputValue]);
 
     const handleDateSelect = (date: Date | null) => {
         if (nativeRef.current) {
             setNativeInputValue(nativeRef.current, date ? formatDate(date) : '');
             setIsPopoverOpen(false);
         }
-    };
 
-    const modifiers = {
-        highlighted:
-            parsedInputDate && formatDate(parsedInputDate) !== (parsedDate && formatDate(parsedDate))
-                ? [parsedInputDate]
-                : [],
+        triggerRef.current?.focus();
     };
-
-    const modifiersClassNames = {
-        highlighted: '!bg-theme-100',
-    };
-
-    /* ------------------- */
 
     return (
         <div className="relative">
@@ -181,31 +149,13 @@ const DateInput = ({
 
                 <Popover.Content
                     className="w-auto p-4 min-w-min flex flex-col gap-4"
-                    onOpenAutoFocus={(e) => {
-                        e.preventDefault();
-                    }}
                     align="start"
                     ref={popoverRef}
+                    onEscapeKeyDown={(e) => {
+                        e.stopPropagation();
+                    }}
                 >
-                    <TextInput
-                        autoFocus
-                        inputClassName="px-2 py-1"
-                        placeholder={searchPlaceholder}
-                        value={inputValue}
-                        onChange={handleInputChange}
-                    />
-
-                    <Button type="button" disabled={!parsedInputDate} onClick={handleButtonClick} className="py-1">
-                        <span className="min-h-5 block">
-                            {parsedInputDate ? displayDate(parsedInputDate) : emptyButtonLabel}
-                        </span>
-                    </Button>
-
-                    <hr className="border-neutral-200" />
-
                     <Calendar
-                        modifiers={modifiers}
-                        modifiersClassNames={modifiersClassNames}
                         className="p-0"
                         mode="single"
                         month={month}

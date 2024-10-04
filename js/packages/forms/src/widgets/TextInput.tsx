@@ -1,8 +1,8 @@
 import * as React from 'react';
 import Widget, { useWidgetState, WidgetProps } from './Widget.tsx';
-import { classnames } from '../utils/classnames.ts';
+import { classnames } from '@nicoknoll/utils';
 import { XIcon } from 'lucide-react';
-import mergeRefs from '../utils/mergeRefs.ts';
+import { mergeRefs } from '@nicoknoll/utils';
 import setNativeInputValue from '../utils/setNativeInputValue.ts';
 
 export interface TextInputProps extends React.ComponentPropsWithRef<'input'> {

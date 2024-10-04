@@ -1,12 +1,9 @@
 import * as React from 'react';
 import { useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import useControllableState from '../utils/useControllableState.tsx';
-import mergeRefs from '../utils/mergeRefs.ts';
+import { mergeEventHandlers, mergeProps, mergeRefs, useControllableState } from '@nicoknoll/utils';
 import { Slot } from '@radix-ui/react-slot';
 import { useMultipleSelection, useSelect } from 'downshift';
-import mergeProps from '../utils/mergeProps.ts';
 import { renderToString } from 'react-dom/server';
-import mergeEventHandlers from '../utils/mergeEventHandlers.ts';
 import { setNativeSelectValue } from '../utils/setNativeInputValue.ts';
 import isEqual from 'lodash/isEqual';
 
@@ -33,6 +30,7 @@ interface SelectContextProps<T> {
     search: string;
     onSearchChange: (search: string) => void;
 
+    forceMount?: boolean;
     open: boolean;
     onOpenChange: (open: boolean) => void;
 
@@ -46,8 +44,8 @@ interface SelectContextProps<T> {
     required?: boolean;
 
     // state management
-    registerOption(value: string, option: Option): void;
-    unregisterOption(value: string): void;
+    registerOption(option: Option, index?: number): void;
+    unregisterOption(option: Option): void;
 
     // refs
     toggleButtonRef?: React.RefObject<HTMLButtonElement>;
@@ -77,6 +75,7 @@ const SelectContextProvider = <T,>({
         selectedOptions,
         onSelectedChange,
         multiple,
+        forceMount,
         open,
         onOpenChange,
         search,
@@ -85,6 +84,7 @@ const SelectContextProvider = <T,>({
     } = props;
 
     const toggleButtonRef = useRef<HTMLButtonElement>(null);
+    const searchRef = useRef<HTMLInputElement>(null);
 
     const selectedIndex = filteredOptions?.findIndex((option) => option.value === selectedOptions[0]?.value);
 
@@ -111,7 +111,7 @@ const SelectContextProvider = <T,>({
     const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
 
     useEffect(() => {
-        if (open) {
+        if (open || forceMount) {
             setHighlightedIndex(
                 highlightedIndex != null && highlightedIndex > -1
                     ? highlightedIndex
@@ -136,6 +136,11 @@ const SelectContextProvider = <T,>({
                           ? selectedIndex
                           : 0
                 );
+
+                // Note: maybe not the cleanest way but it is working
+                setTimeout(() => {
+                    searchRef.current?.focus();
+                }, 10);
             }
         },
         isOpen: disabled ? false : open,
@@ -152,6 +157,17 @@ const SelectContextProvider = <T,>({
         stateReducer(state, actionAndChanges) {
             let { changes, type, index } = actionAndChanges;
             switch (type) {
+                case useSelect.stateChangeTypes.ToggleButtonBlur:
+                    // allow autofocus on search when opened
+                    if (document.activeElement === searchRef.current) {
+                        changes = {
+                            ...changes,
+                            highlightedIndex: state.highlightedIndex,
+                            isOpen: true,
+                        };
+                    }
+                    break;
+
                 case useSelect.stateChangeTypes.ToggleButtonClick:
                     changes = {
                         ...changes,
@@ -217,9 +233,19 @@ const SelectContextProvider = <T,>({
     });
 
     const getInputProps = (props: any) => {
+        const toggleButtonProps = getToggleButtonProps();
+
         const inputProps = {
+            ref: searchRef,
             onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+                setHighlightedIndex(0);
                 onSearchChange(e.target.value);
+            },
+            onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => {
+                if (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'Enter' || e.key === 'Escape') {
+                    e.preventDefault();
+                    toggleButtonProps.onKeyDown?.(e);
+                }
             },
             value: search,
         };
@@ -263,6 +289,7 @@ interface SelectRootProps<T> extends Omit<React.ComponentPropsWithRef<'div'>, 'o
     onSearchChange?: (search: string | undefined) => void;
     searchFilter?: (option: Option, search: string) => boolean;
 
+    forceMount?: boolean;
     defaultOpen?: boolean;
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
@@ -299,6 +326,7 @@ const SelectRoot = <T extends string | string[]>({
     onSearchChange: propsOnSearchChange = () => {},
     searchFilter = defaultFilter,
 
+    forceMount,
     defaultOpen: propsDefaultOpen,
     open: propsOpen,
     onOpenChange: propsOnOpenChange,
@@ -347,25 +375,33 @@ const SelectRoot = <T extends string | string[]>({
 
     /* Options */
 
+    const [registeredOptions, setRegisteredOptions] = useState<Option[]>([]);
     const [options, setOptions] = useState<Option[]>([]);
 
-    useEffect(() => {
-        // in case there is an empty value, this will be selected by default if no value is selected so we can skip this
-        const hasEmptyValue = options.some((option) => option.value === '');
-        if (hasEmptyValue) return;
+    useLayoutEffect(() => {
+        if (open || forceMount) {
+            setOptions(registeredOptions);
+        }
+    }, [open, registeredOptions]);
 
+    useLayoutEffect(() => {
         // select the first option when the options change and no option is selected
-        if (options.length > 0 && selected === '') {
+        if (required && options.length > 0 && selected === '') {
             setSelected(options[0].value as T);
         }
-    }, [options]);
+    }, [options?.length]);
 
-    const registerOption = (value: string, option: Option) => {
-        setOptions((options) => [...options, option]);
+    const registerOption = (option: Option, index?: number) => {
+        setRegisteredOptions((prevOptions) => {
+            if (index !== undefined) {
+                return [...prevOptions.slice(0, index), option, ...prevOptions.slice(index)];
+            }
+            return [...prevOptions, option];
+        });
     };
 
-    const unregisterOption = (value: string) => {
-        setOptions((options) => options.filter((option) => option.value !== value));
+    const unregisterOption = (option: Option) => {
+        setRegisteredOptions((prevOptions) => prevOptions.filter((prevOption) => prevOption.value !== option.value));
     };
 
     const filteredOptions = useMemo(
@@ -572,7 +608,7 @@ interface SelectOptionProps extends React.ComponentPropsWithRef<'div'>, Slottabl
     disabled?: boolean;
 }
 
-const SelectOption = ({ asChild, value, disabled, ...props }: SelectOptionProps) => {
+const SelectOption = ({ asChild, value, disabled, index = undefined, ...props }: SelectOptionProps) => {
     const optionRef = useRef<HTMLDivElement>(null);
 
     const { filteredOptions, selectedOptions, getItemProps, highlightedIndex, registerOption, unregisterOption } =
@@ -582,9 +618,9 @@ const SelectOption = ({ asChild, value, disabled, ...props }: SelectOptionProps)
     const itemData = { ref: optionRef, value, label: text, disabled };
 
     useLayoutEffect(() => {
-        registerOption(value, itemData);
-        return () => unregisterOption(value);
-    }, [value, text, disabled]);
+        registerOption(itemData, index);
+        return () => unregisterOption(itemData);
+    }, [value, text, disabled, index]);
 
     const optionIndex = filteredOptions?.findIndex((option) => option.value === value);
     const option = optionIndex !== undefined && optionIndex > -1 ? filteredOptions?.[optionIndex] : undefined;
@@ -686,15 +722,20 @@ interface SelectNativeProps extends Omit<React.ComponentPropsWithRef<'select'>, 
 const SelectNative = ({ ref, ...props }: SelectNativeProps) => {
     const nativeRef = useRef<HTMLSelectElement>(null);
 
-    const { multiple, options } = useContext(SelectContext)!;
+    const { multiple, options, required } = useContext(SelectContext)!;
 
     return (
         <select {...props} tabIndex={-1} multiple={multiple} ref={mergeRefs(nativeRef, ref)}>
-            {options?.map((option) => (
-                <option key={option.value} value={option.value}>
-                    {option.label}
-                </option>
-            ))}
+            {!required && <option value="" disabled={false} />}
+
+            {options?.map((option) => {
+                const textLabel = typeof option.label === 'string' ? option.label : renderToString(option.label || '');
+                return (
+                    <option key={option.value} value={option.value}>
+                        {textLabel}
+                    </option>
+                );
+            })}
         </select>
     );
 };

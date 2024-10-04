@@ -1,7 +1,7 @@
 import React from 'react';
 import { Option } from './Select.tsx';
 import { SingleSelectProps } from './SingleSelect.tsx';
-import { classnames } from '../utils/classnames.ts';
+import { classnames } from '@nicoknoll/utils';
 import Widget, { useWidgetState } from './Widget.tsx';
 
 const ToggleButton = ({
