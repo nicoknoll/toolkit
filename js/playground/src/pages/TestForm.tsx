@@ -2,7 +2,7 @@ import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import * as React from 'react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { TextInputProps } from '@nicoknoll/forms/src/widgets/FileInput.tsx';
+import { TextInputProps } from '../../../packages/forms/src/widgets/FileInput.tsx';
 import {
     BooleanField,
     CheckboxGroup,
@@ -20,8 +20,9 @@ import {
     TextInput,
     ToggleButton,
     Widget,
-} from '@nicoknoll/forms';
-import Button from '../../packages/forms/src/misc/Button';
+} from '@nicoknoll/forms/dist';
+import Button from '../../../packages/forms/src/misc/Button.tsx';
+import Dialog from '../components/Dialog.tsx';
 
 export type TestFormFieldValues = {
     name: string;
@@ -179,6 +180,11 @@ const TestForm = (props: any) => {
                             searchPlaceholder="Search..."
                             emptyLabel="No language"
                             // required
+                            allowAddOption
+                            onAddOption={(value) => {
+                                LANGUAGE_OPTIONS.push({ value, label: value });
+                                formMethods.setValue('language', value);
+                            }}
                             {...sharedProps}
                         />
                     </Form.Field>

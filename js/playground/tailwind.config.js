@@ -18,16 +18,19 @@ export default {
             outlineWidth: {
                 3: '3px',
             },
+            animation: {
+                'spin-slow': 'spin 3s linear infinite',
+            },
         },
-        colors: {
-            theme: colors.blue,
-            accent: colors.rose,
-            error: colors.red,
-            neutral: colors.neutral,
-            white: colors.white,
-            black: colors.black,
-            transparent: colors.transparent,
-        },
+        // colors: {
+        //     theme: colors.blue,
+        //     accent: colors.rose,
+        //     error: colors.red,
+        //     neutral: colors.neutral,
+        //     white: colors.white,
+        //     black: colors.black,
+        //     transparent: colors.transparent,
+        // },
     },
     plugins: [
         require('tailwindcss-radix')({

@@ -21,13 +21,19 @@
     "noFallthroughCasesInSwitch": true,
 
     "paths": {
-      "@nicoknoll/forms": ["./node_modules/@nicoknoll/forms/src"]
+      "@nicoknoll/forms": ["./node_modules/@nicoknoll/forms/src"],
+      "@nicoknoll/utils": ["./node_modules/@nicoknoll/utils/src"],
+      "@nicoknoll/tables": ["./node_modules/@nicoknoll/tables/src"]
     }
   },
   "include": ["src"],
   "exclude": [
     "node_modules/@nicoknoll/forms/dist",
-    "node_modules/@nicoknoll/forms/node_modules"
+    "node_modules/@nicoknoll/forms/node_modules",
+    "node_modules/@nicoknoll/utils/dist",
+    "node_modules/@nicoknoll/utils/node_modules",
+    "node_modules/@nicoknoll/tables/dist",
+    "node_modules/@nicoknoll/tables/node_modules",
   ],
   "references": [{ "path": "./tsconfig.node.json"}],
   "types": ["vite/client"]
