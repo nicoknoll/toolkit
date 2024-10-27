@@ -76,7 +76,7 @@ const InputFile = ({ className, onRemove, file, disabled, previewImage }: InputF
             disabled={disabled}
         >
             <Widget.Content className="px-2 py-1.5 pr-0 flex items-center gap-1">
-                <span className="text-neutral-400 flex-none -m-0.5 -ml-1 mr-1 block">
+                <span className={classnames('text-neutral-400 flex-none block', previewImage && '-m-0.5 -ml-1 mr-1')}>
                     {previewImage && isImage(ext) ? (
                         <img src={url} alt={basename} className="w-8 h-8 object-cover rounded-sm flex-none" />
                     ) : (
