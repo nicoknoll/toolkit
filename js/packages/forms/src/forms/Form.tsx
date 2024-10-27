@@ -66,7 +66,7 @@ const FormField = ({ children, ...props }: FormFieldProps) => {
                         if (event.target.multiple) {
                             onChange(Array.from(event.target.files));
                         } else {
-                            onChange(event.target.files[0]);
+                            onChange(event.target.files[0] || null);
                         }
                     } else {
                         onChange(event);

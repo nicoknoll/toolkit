@@ -19,6 +19,8 @@ export interface TextInputProps extends React.ComponentPropsWithRef<'input'> {
     inputClassName?: string;
 }
 
+const isImage = (ext: string) => ['jpg', 'jpeg', 'png', 'gif'].includes(ext);
+
 const FileIcon = ({ ext }: { ext: string }) => {
     switch (ext) {
         case 'pdf':
@@ -56,9 +58,10 @@ interface InputFileProps {
     file: InputFile;
     onRemove?: () => void;
     disabled?: boolean;
+    previewImage?: boolean;
 }
 
-const InputFile = ({ className, onRemove, file, disabled }: InputFileProps) => {
+const InputFile = ({ className, onRemove, file, disabled, previewImage }: InputFileProps) => {
     const ext = file.name.split('.').pop() || '';
     const basename = file.name.split('/').pop() || '';
 
@@ -73,8 +76,12 @@ const InputFile = ({ className, onRemove, file, disabled }: InputFileProps) => {
             disabled={disabled}
         >
             <Widget.Content className="px-2 py-1.5 pr-0 flex items-center gap-1">
-                <span className="text-neutral-400">
-                    <FileIcon ext={ext} />
+                <span className="text-neutral-400 flex-none -m-0.5 -ml-1 mr-1 block">
+                    {previewImage && isImage(ext) ? (
+                        <img src={url} alt={basename} className="w-8 h-8 object-cover rounded-sm flex-none" />
+                    ) : (
+                        <FileIcon ext={ext} />
+                    )}
                 </span>
                 <span className="text-sm truncate">{basename}</span>
             </Widget.Content>
@@ -96,6 +103,13 @@ const InputFile = ({ className, onRemove, file, disabled }: InputFileProps) => {
     );
 };
 
+type FileInputChangeEvent = Omit<React.ChangeEvent<HTMLInputElement>, 'target'> & {
+    target: Omit<React.ChangeEvent<HTMLInputElement>['target'], 'value'> & {
+        files: FileList | null;
+        multiple?: boolean;
+    };
+};
+
 interface FileInputProps extends Omit<React.ComponentPropsWithRef<'input'>, 'value' | 'placeholder' | 'accept'> {
     value?: InputFile[];
     placeholder?: React.ReactNode;
@@ -105,6 +119,10 @@ interface FileInputProps extends Omit<React.ComponentPropsWithRef<'input'>, 'val
     minSize?: number;
     accept?: Record<string, string[]>;
     multiple?: boolean;
+
+    onChange: (event: FileInputChangeEvent) => void;
+
+    previewImage?: boolean;
 }
 
 const FileInput = ({
@@ -113,6 +131,7 @@ const FileInput = ({
     onChange,
     widgetRef,
     placeholder,
+    previewImage = false,
     ref,
     ...props
 }: FileInputProps & WidgetProps) => {
@@ -199,7 +218,13 @@ const FileInput = ({
             )}
 
             {files.map((file, index) => (
-                <InputFile key={index} disabled={props.disabled} onRemove={() => handleRemoveFile(index)} file={file} />
+                <InputFile
+                    key={index}
+                    disabled={props.disabled}
+                    onRemove={() => handleRemoveFile(index)}
+                    file={file}
+                    previewImage={previewImage}
+                />
             ))}
         </div>
     );

@@ -1,28 +1,26 @@
-import { EyeIcon, EyeOffIcon } from 'lucide-react';
+import {EyeIcon, EyeOffIcon} from 'lucide-react';
 import * as React from 'react';
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { TextInputProps } from '../../../packages/forms/src/widgets/FileInput.tsx';
-import {
-    BooleanField,
-    CheckboxGroup,
-    DateField,
-    FileField,
-    Form,
-    IntegerField,
-    MemorableDateInput,
-    MultiSelectField,
-    RadioGroup,
-    SelectField,
-    StringField,
-    Switch,
-    TextField,
-    TextInput,
-    ToggleButton,
-    Widget,
-} from '@nicoknoll/forms/dist';
+import {useState} from 'react';
+import {useForm} from 'react-hook-form';
+import {TextInputProps} from '../../../packages/forms/src/widgets/FileInput.tsx';
+
 import Button from '../../../packages/forms/src/misc/Button.tsx';
-import Dialog from '../components/Dialog.tsx';
+import TextInput from "../../../packages/forms/src/widgets/TextInput.tsx";
+import Widget from "../../../packages/forms/src/widgets/Widget.tsx";
+import DateField from "../../../packages/forms/src/fields/DateField.tsx";
+import Form from "../../../packages/forms/src/forms/Form.tsx";
+import BooleanField from "../../../packages/forms/src/fields/BooleanField.tsx";
+import CheckboxGroup from "../../../packages/forms/src/widgets/CheckboxGroup.tsx";
+import Switch from "../../../packages/forms/src/widgets/Switch.tsx";
+import MultiSelectField from "../../../packages/forms/src/fields/MultiSelectField.tsx";
+import MemorableDateInput from "../../../packages/forms/src/widgets/MemorableDateInput.tsx";
+import StringField from "../../../packages/forms/src/fields/StringField.tsx";
+import SelectField from "../../../packages/forms/src/fields/SelectField.tsx";
+import ToggleButton from "../../../packages/forms/src/widgets/ToggleButton.tsx";
+import TextField from "../../../packages/forms/src/fields/TextField.tsx";
+import IntegerField from "../../../packages/forms/src/fields/IntegerField.tsx";
+import RadioGroup from "../../../packages/forms/src/widgets/RadioGroup.tsx";
+import FileField from "../../../packages/forms/src/fields/FileField.tsx";
 
 export type TestFormFieldValues = {
     name: string;
@@ -139,7 +137,8 @@ const TestForm = (props: any) => {
                         <FileField
                             label="File"
                             {...sharedProps}
-                            multiple
+                            previewImage
+                            // multiple
                             placeholder={
                                 <>
                                     Drag 'n' drop some files or{' '}
@@ -148,6 +147,7 @@ const TestForm = (props: any) => {
                                     </u>
                                 </>
                             }
+                            onChange={console.warn}
                         />
                     </Form.Field>
 
@@ -180,6 +180,7 @@ const TestForm = (props: any) => {
                             searchPlaceholder="Search..."
                             emptyLabel="No language"
                             // required
+                            hideCheck
                             allowAddOption
                             onAddOption={(value) => {
                                 LANGUAGE_OPTIONS.push({ value, label: value });

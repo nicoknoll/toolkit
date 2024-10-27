@@ -7,7 +7,14 @@ import { classnames } from '@nicoknoll/utils';
 import Widget, { useWidgetState, WidgetProps } from './Widget.tsx';
 import { setNativeSelectValue } from '../utils/setNativeInputValue.ts';
 
-const SingleSelectOption = ({ value, label, disabled = false, className, index = undefined }: Option) => {
+const SingleSelectOption = ({
+    value,
+    label,
+    disabled = false,
+    className,
+    index = undefined,
+    hideCheck = false,
+}: Option) => {
     return (
         <Select.Option
             value={value}
@@ -18,11 +25,13 @@ const SingleSelectOption = ({ value, label, disabled = false, className, index =
             disabled={disabled}
             index={index}
         >
-            <span className="flex justify-center items-center w-4 h-4 flex-none">
-                <Select.OptionIndicator>
-                    <CheckIcon />
-                </Select.OptionIndicator>
-            </span>
+            {!hideCheck && (
+                <span className="flex justify-center items-center w-4 h-4 flex-none">
+                    <Select.OptionIndicator>
+                        <CheckIcon />
+                    </Select.OptionIndicator>
+                </span>
+            )}
 
             <Select.OptionText>{label || value}</Select.OptionText>
         </Select.Option>
@@ -46,6 +55,7 @@ export interface SingleSelectProps extends React.ComponentPropsWithRef<'select'>
     emptyLabel?: string;
 
     hideSearch?: boolean;
+    hideCheck?: boolean;
     hideClear?: boolean;
 
     // select props
@@ -73,6 +83,7 @@ export const SingleSelect = ({
     emptyLabel,
 
     hideSearch = false,
+    hideCheck = false,
     hideClear = false,
 
     // remaining are select props we can pass down
@@ -234,7 +245,7 @@ export const SingleSelect = ({
 
                         <div
                             className={classnames(
-                                'flex flex-col overflow-auto scrollbar-thin flex-1 min-h-0 p-2',
+                                'flex flex-col overflow-auto scrollbar-thin flex-1 min-h-0 p-1.5',
                                 !hideSearch && 'pt-0'
                             )}
                         >
@@ -245,6 +256,7 @@ export const SingleSelect = ({
                                     label={search || ''}
                                     disabled={!search}
                                     className={!search ? 'hidden' : ''}
+                                    hideCheck={hideCheck}
                                 />
                             )}
 
@@ -261,14 +273,18 @@ export const SingleSelect = ({
                                                     {label}
                                                 </Select.GroupLabel>
                                                 {options.map((option: Option) => (
-                                                    <MemoSingleSelectOption key={option.value} {...option} />
+                                                    <MemoSingleSelectOption
+                                                        key={option.value}
+                                                        {...option}
+                                                        hideCheck={hideCheck}
+                                                    />
                                                 ))}
                                             </Select.Group>
                                         </React.Fragment>
                                     );
                                 }
 
-                                return <MemoSingleSelectOption key={option.value} {...option} />;
+                                return <MemoSingleSelectOption key={option.value} {...option} hideCheck={hideCheck} />;
                             })}
                         </div>
                     </Select.Content>

@@ -4,6 +4,10 @@ import { classnames } from '@nicoknoll/utils';
 import Dynamic from '../../../utils/src/components/Dynamic.tsx';
 import React, { useId } from 'react';
 
+type BooleanChangeEvent = Omit<React.ChangeEvent<HTMLInputElement>, 'target'> & {
+    target: Omit<React.ChangeEvent<HTMLInputElement>['target'], 'value'> & { value: boolean };
+};
+
 const BooleanField = ({
     label,
     error,
@@ -13,14 +17,27 @@ const BooleanField = ({
 
     defaultValue,
     value,
+    onChange,
 
     reverse,
-
     ...props
-}: FieldProps<boolean> & {
-    reverse?: true;
-} & React.ComponentPropsWithRef<typeof Checkbox>) => {
+}: Omit<FieldProps<boolean>, 'onChange'> &
+    Omit<React.ComponentPropsWithRef<typeof Checkbox>, 'onChange'> & {
+        reverse?: true;
+        onChange?: (event: BooleanChangeEvent) => void;
+    }) => {
     const id = useId();
+
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        onChange?.({
+            ...event,
+            target: {
+                ...event.target,
+                value: Boolean(event.target.checked),
+            },
+        } as BooleanChangeEvent);
+    };
+
     return (
         <Field
             className={classnames(
@@ -37,6 +54,7 @@ const BooleanField = ({
                     checked={value}
                     className={classnames(!reverse && 'mt-0.5')}
                     component={widget || Checkbox}
+                    onChange={handleChange}
                     {...props}
                     id={props.id || id}
                 />
@@ -47,7 +65,11 @@ const BooleanField = ({
                         {label}
                     </Field.Label>
                 )}
-                {error ? <Field.Error>{error}</Field.Error> : helpText && <Field.HelpText>{helpText}</Field.HelpText>}
+                {error ? (
+                    <Field.Error>{(error as any)?.message || error}</Field.Error>
+                ) : (
+                    helpText && <Field.HelpText>{helpText}</Field.HelpText>
+                )}
             </div>
         </Field>
     );

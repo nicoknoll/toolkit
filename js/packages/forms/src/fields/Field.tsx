@@ -8,7 +8,7 @@ import { mergeRefs } from '@nicoknoll/utils';
 export interface FieldProps<T> {
     // field component props
     label?: React.ReactNode;
-    error?: React.ReactNode;
+    error?: React.ReactNode | { message: React.ReactNode };
     helpText?: React.ReactNode;
     widget?: any;
     className?: string;
@@ -92,7 +92,11 @@ export const SimpleField = <T,>({ ref, label, error, helpText, widget, className
 
             <Dynamic component={widget || TextInput} {...props} ref={mergeRefs(inputRef, ref)} id={props.id || id} />
 
-            {error ? <FieldError>{error}</FieldError> : helpText && <FieldHelpText>{helpText}</FieldHelpText>}
+            {error ? (
+                <FieldError>{(error as any)?.message || error}</FieldError>
+            ) : (
+                helpText && <FieldHelpText>{helpText}</FieldHelpText>
+            )}
         </FieldRoot>
     );
 };
