@@ -66,6 +66,7 @@ const InputFile = ({ className, onRemove, file, disabled, previewImage }: InputF
     const basename = file.name.split('/').pop() || '';
 
     const url = file.url || (isBlob(file) ? URL.createObjectURL(file) : undefined);
+    const [imageDimensions, setImageDimensions] = React.useState<{ width: number; height: number } | null>(null);
 
     return (
         <Widget
@@ -76,14 +77,33 @@ const InputFile = ({ className, onRemove, file, disabled, previewImage }: InputF
             disabled={disabled}
         >
             <Widget.Content className="px-2 py-1.5 pr-0 flex items-center gap-1">
-                <span className={classnames('text-neutral-400 flex-none block', previewImage && '-m-0.5 -ml-1 mr-1')}>
+                <span className={classnames('text-neutral-400 flex-none block', previewImage && 'mr-1')}>
                     {previewImage && isImage(ext) ? (
-                        <img src={url} alt={basename} className="w-8 h-8 object-cover rounded-sm flex-none" />
+                        <a href={!disabled ? url : undefined} target="_blank">
+                            <img
+                                src={url}
+                                alt={basename}
+                                className="w-9 h-9 object-cover rounded-sm flex-none"
+                                onLoad={(e) =>
+                                    setImageDimensions({
+                                        width: (e.target as HTMLImageElement).naturalWidth,
+                                        height: (e.target as HTMLImageElement).naturalHeight,
+                                    })
+                                }
+                            />
+                        </a>
                     ) : (
                         <FileIcon ext={ext} />
                     )}
                 </span>
-                <span className="text-sm truncate">{basename}</span>
+                <span className="flex flex-col flex-1">
+                    <span className="text-sm truncate">{basename}</span>
+                    {previewImage && imageDimensions && (
+                        <span className="text-xs text-neutral-400">
+                            {imageDimensions.width}x{imageDimensions.height}
+                        </span>
+                    )}
+                </span>
             </Widget.Content>
 
             <Widget.Controls>
