@@ -120,7 +120,7 @@ interface FileInputProps extends Omit<React.ComponentPropsWithRef<'input'>, 'val
     accept?: Record<string, string[]>;
     multiple?: boolean;
 
-    onChange: (event: FileInputChangeEvent) => void;
+    onChange?: (event: FileInputChangeEvent) => void;
 
     previewImage?: boolean;
 }
