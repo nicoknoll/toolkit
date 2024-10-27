@@ -33,4 +33,12 @@ export const getNativeSelectValue = (select: HTMLSelectElement) => {
     }
 };
 
+export const setNativeTextareaValue = (textarea: HTMLTextAreaElement, value: string) => {
+    const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value')?.set;
+    nativeInputValueSetter?.call(textarea, value);
+
+    textarea.dispatchEvent(new Event('input', { bubbles: true }));
+    textarea.dispatchEvent(new Event('change', { bubbles: true }));
+};
+
 export default setNativeInputValue;
