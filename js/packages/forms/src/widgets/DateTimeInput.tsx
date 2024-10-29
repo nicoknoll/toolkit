@@ -175,7 +175,7 @@ const DateTimeInput = ({
                 </Popover.Trigger>
 
                 <Popover.Content
-                    className="w-auto !pb-6 min-w-min flex flex-col gap-4"
+                    className="w-auto min-w-min flex flex-col gap-4"
                     onOpenAutoFocus={(e) => {
                         e.preventDefault();
                     }}

@@ -21,6 +21,7 @@ import TextField from "../../../packages/forms/src/fields/TextField.tsx";
 import IntegerField from "../../../packages/forms/src/fields/IntegerField.tsx";
 import RadioGroup from "../../../packages/forms/src/widgets/RadioGroup.tsx";
 import FileField from "../../../packages/forms/src/fields/FileField.tsx";
+import DateTimeField from "../../../packages/forms/src/fields/DateTimeField.tsx";
 
 export type TestFormFieldValues = {
     name: string;
@@ -60,7 +61,7 @@ const TestForm = (props: any) => {
             ],
             name: 'test',
             password: '',
-            date: '',
+            date: '2020-01-01T12:12:12Z',
             birthday: '',
             terms: undefined,
             terms2: undefined,
@@ -160,7 +161,7 @@ const TestForm = (props: any) => {
                     </Form.Field>
 
                     <Form.Field name="date">
-                        <DateField label="Date" required {...sharedProps} />
+                        <DateTimeField label="Date" required {...sharedProps}/>
                     </Form.Field>
 
                     <Form.Field name="birthday">
