@@ -150,6 +150,15 @@ export const SingleSelect = ({
         }
     };
 
+    const [contentRef, setContentRef] = useState<HTMLDivElement | null>(null);
+    useEffect(() => {
+        if (contentRef) {
+            setTimeout(() => {
+                contentRef?.querySelector('[data-selected]')?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            }, 0);
+        }
+    }, [contentRef]);
+
     return (
         <Popover open={isPopoverOpen}>
             <Select
@@ -222,6 +231,7 @@ export const SingleSelect = ({
                     }}
                 >
                     <Select.Content
+                        ref={setContentRef}
                         className="flex flex-col flex-1 min-h-0"
                         onKeyDown={(e) => {
                             if (e.key === 'Escape') {

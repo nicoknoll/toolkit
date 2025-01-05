@@ -624,13 +624,13 @@ const SelectOption = ({ asChild, value, disabled, index = undefined, ...props }:
 
     const optionIndex = filteredOptions?.findIndex((option) => option.value === value);
     const option = optionIndex !== undefined && optionIndex > -1 ? filteredOptions?.[optionIndex] : undefined;
+    const isSelected = selectedOptions?.some((selectedOption) => selectedOption.value === value);
 
     if (!option) return null;
 
     const itemProps = getItemProps({ item: option, index: optionIndex });
     const mergedProps = mergeProps(itemProps, props);
     const isHighlighted = highlightedIndex === optionIndex;
-    const isSelected = selectedOptions?.some((selectedOption) => selectedOption.value === value);
 
     const Comp = asChild ? Slot : 'div';
     return (
