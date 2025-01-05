@@ -3,6 +3,7 @@ import { DayPicker } from 'react-day-picker';
 import { classnames } from '@nicoknoll/utils';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import { de } from 'date-fns/locale';
+import SingleSelect from './SingleSelect.tsx';
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
@@ -33,12 +34,12 @@ const Calendar = ({
                 month: 'space-y-4',
                 caption: 'flex justify-center pt-1 relative items-center',
                 caption_label: 'text-sm font-medium',
-                caption_dropdowns: 'flex items-center shadow-sm',
+                caption_dropdowns: 'flex items-center shadow-sm gap-1',
                 nav: 'space-x-1 flex items-center',
                 nav_button:
-                    'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-neutral-300 text-neutral-900 bg-background shadow-sm hover:bg-neutral-100 hover:text-neutral-800 hover:border-neutral-400 h-7 w-7 bg-transparent p-0',
-                nav_button_previous: 'absolute left-1',
-                nav_button_next: 'absolute right-1',
+                    'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-neutral-300 text-neutral-900 bg-background shadow-sm hover:bg-neutral-100 hover:text-neutral-800 hover:border-neutral-400 h-[2.175rem] w-7 bg-transparent p-0',
+                nav_button_previous: 'absolute left-0.5',
+                nav_button_next: 'absolute right-0.5',
                 table: 'w-full border-collapse space-y-1',
                 head_row: 'flex',
                 head_cell: 'text-neutral-500 rounded-md w-9 font-normal text-[0.8rem]',
@@ -60,39 +61,26 @@ const Calendar = ({
             components={{
                 IconLeft: ({ ...props }) => <ChevronLeftIcon className="h-4 w-4" />,
                 IconRight: ({ ...props }) => <ChevronRightIcon className="h-4 w-4" />,
-                // Dropdown: ({ ...props }) => {
-                //     const { name, onChange, value } = props;
-                //
-                //     const handleChange = (value: any) => {
-                //         const event: any = new Event('change', { bubbles: true });
-                //         Object.defineProperty(event, 'target', { value: { value } });
-                //         onChange?.(event);
-                //     };
-                //
-                //     return (
-                //         <Select onValueChange={handleChange} value={value?.toString()} name={name}>
-                //             <Select.Trigger
-                //                 className={classnames(
-                //                     /*       buttonVariants({ variant: 'outline' }),*/
-                //                     'h-7 py-0 px-1.5 pl-2.5 shadow-none',
-                //                     name === 'months' ? 'rounded-r-none shadow-none' : '',
-                //                     name === 'years' ? 'rounded-l-none border-l-0' : ''
-                //                 )}
-                //             >
-                //                 <Select.Value placeholder="" />
-                //             </Select.Trigger>
-                //             <Select.Content>
-                //                 {React.Children.map(props.children, (child: any) => {
-                //                     return (
-                //                         <Select.Item key={child.key} value={child.props?.value.toString()}>
-                //                             {child.props?.children}
-                //                         </Select.Item>
-                //                     );
-                //                 })}
-                //             </Select.Content>
-                //         </Select>
-                //     );
-                // },
+                Dropdown: ({ ...props }) => {
+                    const { name, onChange, value } = props;
+                    return (
+                        <SingleSelect
+                            className={classnames(name === 'months' && 'min-w-[6.75rem]', props.className)}
+                            onChange={onChange}
+                            value={value?.toString()}
+                            name={name}
+                            options={React.Children.map(props.children, (child: any) => {
+                                return {
+                                    value: child.props?.value.toString(),
+                                    label: child.props?.children,
+                                };
+                            })}
+                            required
+                            hideSearch
+                            hideCheck
+                        />
+                    );
+                },
             }}
             {...props}
         />

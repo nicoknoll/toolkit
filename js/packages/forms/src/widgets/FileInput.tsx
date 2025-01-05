@@ -208,7 +208,7 @@ const FileInput = ({
                     data-placeholder=""
                     data-disabled={props.disabled ? '' : undefined}
                     className={classnames(
-                        'group shadow-none transition-colors',
+                        'group shadow-none transition-colors min-h-20',
                         !props.disabled && 'border-dashed bg-neutral-50 hover:bg-neutral-100',
                         'focus:border-solid focus-within:border-solid',
                         'ui-placeholder:text-neutral-400',
@@ -221,7 +221,7 @@ const FileInput = ({
                     <Widget.Content asChild>
                         <div
                             {...getRootProps()}
-                            className={classnames('px-2 py-1.5 flex flex-1 justify-center items-center min-h-20')}
+                            className={classnames('px-2 py-1.5 flex flex-1 justify-center items-center')}
                         >
                             <input {...getInputProps()} />
                             <span

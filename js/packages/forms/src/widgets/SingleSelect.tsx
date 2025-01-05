@@ -177,7 +177,7 @@ export const SingleSelect = ({
                             <Widget.Content asChild>
                                 <button
                                     ref={triggerRef}
-                                    className="px-2 py-1.5 pr-0 cursor-default !outline-none text-left"
+                                    className="pl-2 py-1.5 pr-0 cursor-default !outline-none text-left"
                                     disabled={selectProps.disabled}
                                     type="button"
                                 >
@@ -194,7 +194,7 @@ export const SingleSelect = ({
                                         <XIcon />
                                     </Widget.ControlButton>
                                 ) : (
-                                    <Widget.ControlButton className="pointer-events-none">
+                                    <Widget.ControlButton className="pointer-events-none -ml-2">
                                         <ChevronsUpDownIcon
                                             className={classnames(
                                                 'text-neutral-400 transition-colors',

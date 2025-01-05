@@ -100,6 +100,8 @@ const TestForm = (props: any) => {
         placeholder: placeholder ? 'Placeholder' : undefined,
     };
 
+    const [month, setMonth] = useState<Date>(new Date());
+
     return (
         <div className="w-full flex justify-center">
             <div className="flex flex-col gap-16 max-w-[800px] w-full">
@@ -161,7 +163,12 @@ const TestForm = (props: any) => {
                     </Form.Field>
 
                     <Form.Field name="date">
-                        <DateTimeField label="Date" required {...sharedProps}/>
+                        <DateTimeField label="Date" required {...sharedProps} calendarProps={{
+                            fromDate: new Date(),
+                            toDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+                            month: month,
+                            onMonthChange: setMonth,
+                        }}/>
                     </Form.Field>
 
                     <Form.Field name="birthday">
