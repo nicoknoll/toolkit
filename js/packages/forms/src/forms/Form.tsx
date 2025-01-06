@@ -85,4 +85,6 @@ const FormField = ({ children, ...props }: FormFieldProps) => {
         />
     );
 };
+
 export default Object.assign(Form, { Field: FormField });
+export { useFormContext } from 'react-hook-form';
