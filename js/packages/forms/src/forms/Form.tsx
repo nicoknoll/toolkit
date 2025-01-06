@@ -11,6 +11,7 @@ import {
 } from 'react-hook-form';
 import isMultipleSelect from '../utils/isMultipleSelect.ts';
 import { Slot } from '@radix-ui/react-slot';
+import { Slottable } from '../widgets/Select.tsx';
 
 interface FormProps<TFieldValues extends FieldValues = FieldValues>
     extends Omit<React.ComponentPropsWithRef<'form'>, 'onSubmit'> {
@@ -86,5 +87,22 @@ const FormField = ({ children, ...props }: FormFieldProps) => {
     );
 };
 
-export default Object.assign(Form, { Field: FormField });
+const FormButton = ({
+    asChild,
+    loading,
+    ...props
+}: React.ComponentPropsWithRef<'button'> & Slottable & { loading?: boolean }) => {
+    const { formState } = useFormContext();
+    const Comp = asChild ? Slot : 'button';
+    const compProps = asChild
+        ? {
+              loading: loading !== undefined ? loading : formState.isSubmitting,
+          }
+        : {};
+
+    return <Comp {...compProps} {...props} />;
+};
+
+export default Object.assign(Form, { Field: FormField, Button: FormButton });
+
 export { useFormContext } from 'react-hook-form';
