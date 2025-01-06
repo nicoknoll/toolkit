@@ -59,18 +59,20 @@ const BooleanField = ({
                     id={props.id || id}
                 />
             </div>
-            <div className="flex-1">
-                {label && (
-                    <Field.Label required={props.required} htmlFor={props.id || id}>
-                        {label}
-                    </Field.Label>
-                )}
-                {error ? (
-                    <Field.Error>{(error as any)?.message || error}</Field.Error>
-                ) : (
-                    helpText && <Field.HelpText>{helpText}</Field.HelpText>
-                )}
-            </div>
+            {label || error || helpText ? (
+                <div className="flex-1">
+                    {label && (
+                        <Field.Label required={props.required} htmlFor={props.id || id}>
+                            {label}
+                        </Field.Label>
+                    )}
+                    {error ? (
+                        <Field.Error>{(error as any)?.message || error}</Field.Error>
+                    ) : (
+                        helpText && <Field.HelpText>{helpText}</Field.HelpText>
+                    )}
+                </div>
+            ) : null}
         </Field>
     );
 };
