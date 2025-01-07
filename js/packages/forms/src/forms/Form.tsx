@@ -104,7 +104,7 @@ const FormButton = ({
     return <Comp {...compProps} {...props} />;
 };
 
-const FormErrorMessage = ({ name = 'root' }: { name: string }) => {
+const FormErrorMessage = ({ name = 'root' }: { name?: string }) => {
     const {
         formState: { errors },
     } = useFormContext();
