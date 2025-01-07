@@ -104,8 +104,20 @@ const FormButton = ({
     return <Comp {...compProps} {...props} />;
 };
 
-const FormErrorMessage = ({
+const FormError = ({
     asChild,
+    name = 'root',
+    ...props
+}: React.ComponentPropsWithRef<'div'> & Slottable & { name?: string }) => {
+    const {
+        formState: { errors },
+    } = useFormContext();
+    const error: FieldError = errors?.[name] as FieldError;
+    const Comp = asChild ? Slot : 'div';
+    return error ? <Comp {...props} data-error={error.message} /> : null;
+};
+
+const FormErrorMessage = ({
     name = 'root',
     ...props
 }: React.ComponentPropsWithRef<'span'> & Slottable & { name?: string }) => {
@@ -113,10 +125,14 @@ const FormErrorMessage = ({
         formState: { errors },
     } = useFormContext();
     const error: FieldError = errors?.[name] as FieldError;
-    const Comp = asChild ? Slot : 'span';
-    return error ? <Comp {...props}>{error.message}</Comp> : null;
+    return error ? error.message : null;
 };
 
-export default Object.assign(Form, { Field: FormField, Button: FormButton, ErrorMessage: FormErrorMessage });
+export default Object.assign(Form, {
+    Field: FormField,
+    Button: FormButton,
+    Error: FormError,
+    ErrorMessage: FormErrorMessage,
+});
 
 export { useFormContext } from 'react-hook-form';
