@@ -104,12 +104,17 @@ const FormButton = ({
     return <Comp {...compProps} {...props} />;
 };
 
-const FormErrorMessage = ({ name = 'root' }: { name?: string }) => {
+const FormErrorMessage = ({
+    asChild,
+    name = 'root',
+    ...props
+}: React.ComponentPropsWithRef<'span'> & Slottable & { name?: string }) => {
     const {
         formState: { errors },
     } = useFormContext();
     const error: FieldError = errors?.[name] as FieldError;
-    return error ? error.message : null;
+    const Comp = asChild ? Slot : 'span';
+    return error ? <Comp {...props}>{error.message}</Comp> : null;
 };
 
 export default Object.assign(Form, { Field: FormField, Button: FormButton, ErrorMessage: FormErrorMessage });
