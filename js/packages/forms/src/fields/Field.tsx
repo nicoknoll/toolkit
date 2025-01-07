@@ -55,7 +55,7 @@ const FieldLabel = ({ className, ...props }: FieldLabelProps) => {
 interface FieldErrorProps extends React.ComponentPropsWithRef<'p'> {}
 
 const FieldError = ({ className, ...props }: FieldErrorProps) => {
-    return <p className={classnames('text-sm text-error-500', className)} {...props} />;
+    return <p className={classnames('text-sm text-error-500 whitespace-pre-line', className)} {...props} />;
 };
 
 interface FieldHelpTextProps extends React.ComponentPropsWithRef<'p'> {}

@@ -2,6 +2,7 @@ import * as React from 'react';
 import {
     Controller,
     ControllerProps,
+    FieldError,
     FieldValues,
     FormProvider,
     SubmitHandler,
@@ -103,6 +104,14 @@ const FormButton = ({
     return <Comp {...compProps} {...props} />;
 };
 
-export default Object.assign(Form, { Field: FormField, Button: FormButton });
+const FormErrorMessage = ({ name = 'root' }: { name: string }) => {
+    const {
+        formState: { errors },
+    } = useFormContext();
+    const error: FieldError = errors?.[name] as FieldError;
+    return error ? error.message : null;
+};
+
+export default Object.assign(Form, { Field: FormField, Button: FormButton, ErrorMessage: FormErrorMessage });
 
 export { useFormContext } from 'react-hook-form';
